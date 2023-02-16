@@ -1,0 +1,20 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterRunTemplate
+metadata:
+  # kaniko-build
+  name: <NAME>
+spec:
+  outputs:
+    image-ref: .status.taskResults[?(@.name=="image_ref")].value
+  template:
+    apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: $(runnable.metadata.name)$-
+      labels: $(runnable.metadata.labels)$
+    spec:
+      params: $(runnable.spec.inputs.params)$
+      serviceAccountName: $(runnable.spec.inputs.serviceAccount)$
+      taskRef:
+        kind: ClusterTask
+        name: <CLUSTER_TASK_NAME>
