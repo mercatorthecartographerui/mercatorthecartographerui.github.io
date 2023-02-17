@@ -1,10 +1,11 @@
 apiVersion: carto.run/v1alpha1
 kind: ClusterSupplyChain
 metadata:
-  generation: 1
   labels:
-    mode: "custom"
-  name: custom-source-test-scan-to-url
+    author: admin
+    org: myorg
+    buildfor: webapps
+  name: sample-supply-chain
 spec:
   selector:
     apps.tanzu.vmware.com/has-tests: "true"
@@ -26,49 +27,45 @@ spec:
     - name: gitops_user_email
       default: supplychain
     - name: gitops_commit_message
-      default: tap-demo-commit-from-dctap1
+      default: sample
     - name: gitops_ssh_secret
       default: git-ssh
     - name: gitops_server_address
       default: https://github.com
     - name: gitops_repository_owner
-      default: alinahid477
+      default: sampleusername
     - name: gitops_repository_name
-      default: https://github.com/alinahid477/tapdemo-gitops
-
+      default: https://github.com/sampleusrename/app_gitops
   resources:
-    - name: source-provider
+    - name: get-source
       templateRef:
         kind: ClusterSourceTemplate
-        name: custom-source-template
+        name: source-git-pull
       params:
         - name: serviceAccount
           value: default
         - name: gitImplementation
           value: go-git
-
-    - name: source-tester
+    - name: test-source
       templateRef:
         kind: ClusterSourceTemplate
-        name: testing-pipeline
+        name: test-template
       sources:
         - name: source
-          resource: source-provider
-
-    - name: source-scanner
+          resource: get-source
+    - name: scan-source
       templateRef:
         kind: ClusterSourceTemplate
-        name: source-scanner-template
+        name: source-scanner
       params:
-        - default: scan-policy
-          name: scanning_source_policy
-        - default: blob-source-scan-template
-          name: scanning_source_template
+        - name: scanning_source_policy
+          default: scan-policy
+        - name: scanning_source_template
+          default: blob-source-scan-template
       sources:
         - name: source
-          resource: source-tester
-
-    - name: image-provider
+          resource: test-source
+    - name: make-oci-image
       templateRef:
         kind: ClusterImageTemplate
         options:
@@ -99,16 +96,13 @@ spec:
           name: dockerfile
         - default: ./
           name: docker_build_context
-        - default: []
-          name: docker_build_extra_args
       sources:
         - name: source
-          resource: source-scanner
-
-    - name: image-scanner
+          resource: scan-source
+    - name: scan-oci-image
       templateRef:
         kind: ClusterImageTemplate
-        name: image-scanner-template
+        name: scan-oci-image-template
       params:
         - name: scanning_image_policy
           default: scan-policy
@@ -116,48 +110,36 @@ spec:
           default: private-image-scan-template
       images:
         - name: image
-          resource: image-provider
-
-    - name: config-provider
+          resource: make-oci-image
+    - name: configure-pod-run
       templateRef:
         kind: ClusterConfigTemplate
-        name: convention-template
+        name: pod-run-convention
       params:
         - name: serviceAccount
           value: default
       images:
         - name: image
-          resource: image-scanner
-
-    - name: app-config
+          resource: scan-oci-image
+    - name: config-provider
       templateRef:
         kind: ClusterConfigTemplate
         options:
           - name: config-template
             selector:
               matchLabels:
-                apps.tanzu.vmware.com/workload-type: web
-                apps.tanzu.vmware.com/mode: custom
-          - name: server-template
-            selector:
-              matchLabels:
-                apps.tanzu.vmware.com/workload-type: server
-          - name: worker-template
-            selector:
-              matchLabels:
-                apps.tanzu.vmware.com/workload-type: worker
+                - apps.tanzu.vmware.com/workload-type: web
+                - apps.tanzu.vmware.com/mode: custom
       configs:
         - name: config
-          resource: config-provider
-
+          resource: configure-pod-run
     - name: service-bindings
       templateRef:
         kind: ClusterConfigTemplate
         name: service-bindings
       configs:
         - name: app_def
-          resource: app-config
-
+          resource: config-provider
     - name: api-descriptors
       templateRef:
         kind: ClusterConfigTemplate
@@ -165,7 +147,6 @@ spec:
       configs:
         - name: app_def
           resource: service-bindings
-
     - name: config-writer
       templateRef:
         kind: ClusterTemplate
@@ -175,13 +156,11 @@ spec:
           value: default
         - name: registry
           value:
-            ca_cert_data: ""
             repository: projects
             server: mypvtregistry.azurecr.io
       configs:
         - name: config
           resource: api-descriptors
-
     - name: deliverable
       templateRef:
         kind: ClusterTemplate

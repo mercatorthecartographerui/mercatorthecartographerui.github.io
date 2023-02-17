@@ -3,26 +3,13 @@ kind: ClusterDeploymentTemplate
 metadata:
   name: <NAME>
 spec:
-  healthRule:
-    multiMatch:
-      healthy:
-        matchConditions:
-          - status: "True"
-            type: ReconcileSucceeded
-      unhealthy:
-        matchFields:
-          - key: status.conditions[?(@.type=="ReconcileFailed")].status
-            messagePath: .status.usefulErrorMessage
-            operator: In
-            values:
-              - "True"
   observedCompletion:
-    failed:
-      key: .status.conditions[?(@.type=="ReconcileSucceeded")].status
-      value: "False"
     succeeded:
       key: .status.conditions[?(@.type=="ReconcileSucceeded")].status
       value: "True"
+    failed:
+      key: .status.conditions[?(@.type=="ReconcileSucceeded")].status
+      value: "False"
   params:
     - name: serviceAccount
       default: <DEFAULT_SERVICE_ACCOUNT_NAME>
@@ -46,7 +33,6 @@ spec:
       name: #@ data.values.deliverable.metadata.name
       labels: #@ merge_labels({ "app.kubernetes.io/component": "deploy" })
     spec:
-      syncPeriod: 10m0s
       serviceAccountName: #@ data.values.params.serviceAccount
       fetch:
         - http:
@@ -64,12 +50,20 @@ spec:
                 apiVersion: kapp.k14s.io/v1alpha1
                 kind: Config
                 rebaseRules:
-                  - path: [metadata, annotations, serving.knative.dev/creator]
+                  - path: 
+                      - metadata
+                      - annotations
+                      - serving.knative.dev/creator
                     type: copy
                     sources: [new, existing]
                     resourceMatchers: &matchers
-                      - apiVersionKindMatcher: {apiVersion: serving.knative.dev/v1, kind: Service}
-                  - path: [metadata, annotations, serving.knative.dev/lastModifier]
+                      - apiVersionKindMatcher: 
+                          apiVersion: serving.knative.dev/v1
+                          kind: Service
+                  - path: 
+                      - metadata, 
+                      - annotations, 
+                      - serving.knative.dev/lastModifier
                     type: copy
                     sources: [new, existing]
                     resourceMatchers: *matchers
