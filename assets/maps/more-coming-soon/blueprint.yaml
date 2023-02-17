@@ -1,0 +1,7 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterSupplyChain
+metadata:
+  name: more-coming-soon
+spec:
+  selector:
+    app.tanzu.vmware.com/deliverable-type: web
