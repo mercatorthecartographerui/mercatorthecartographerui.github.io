@@ -1,0 +1,224 @@
+[
+  {
+    "usedin": "common",
+    "type": "text",
+    "field": "NAME",
+    "label": "Object Name",
+    "helperText": "name of the object",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Name is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "common",
+    "type": "text",
+    "field": "DEFAULT_SERVICE_ACCOUNT_NAME",
+    "label": "Default Service account",
+    "defaultValue": "default",
+    "helperText":
+      "Service account is used by the cartographer to access secrets for getting or pushing data from or to external sources such as git repo, image registry etc.<br/><em>If no parameters is supplied from ClusterSupplyChain(blueprint) OR Workload(owner) then this default value is used.</em>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Service account is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster source template",
+    "type": "text",
+    "field": "PARAM_NAME_OF_SOURCE_GIT_SECRET",
+    "label": "Source repo git secret name",
+    "helperText":
+      "the git secret you applied in the cluster.<br/>This could also be the a parameter map from workload.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Source repo git secret is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster source template",
+    "type": "text",
+    "field": "PARAM_NAME_OF_GITOPS_SSH_SECRET",
+    "label": "GitOps repo ssh git secret name",
+    "helperText":
+      "the git secret (must be of type ssh) you applied in the cluster.<br/>This could also be the a parameter map from workload.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["GitOps repo git secret is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster source template",
+    "type": "number",
+    "field": "POLL_INTERVAL_MIN",
+    "label": "Poll Interval (min)",
+    "helperText": "Git repo monitor will poll from repo.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Poll Interval is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster image template - KPACK",
+    "type": "text",
+    "field": "DEFAULT_KPACK_CLUSTER_BUILDER",
+    "label": "Default Kpack cluster builder",
+    "defaultValue": "default",
+    "helperText":
+      "Cluster builder is used to build source and produce OCI image.<br/><em>If no parameters is supplied from ClusterSupplyChain(blueprint) OR Workload(owner) then this default value is used.</em>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Cluster Builder name is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "Cluster image template - KANIKO",
+    "type": "text",
+    "field": "DEFAULT_DOCKERFILE",
+    "label": "Default Dockerfile (fullpath)",
+    "defaultValue": "./Dockerfile",
+    "helperText":
+      "Dockerfile used to produce OCI image.<br/>exmaple: ./Dockerfile<br/><em>If no parameters is supplied from ClusterSupplyChain(blueprint) OR Workload(owner) then this default value is used.</em>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Dockerfile fullpath is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "Cluster image template - KANIKO",
+    "type": "text",
+    "field": "DEFAULT_DOCKER_BUILD_CONTEXT",
+    "label": "Default docker build context (fullpath)",
+    "defaultValue": "./",
+    "helperText":
+      "Dockerfile used to produce OCI image.<br/>example: ./<br/><em>If no parameters is supplied from ClusterSupplyChain(blueprint) OR Workload(owner) then this default value is used.</em>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Docker build context is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "Cluster image template - KANIKO",
+    "type": "text",
+    "field": "KANIKO_RUN_TEMPLATE_NAME",
+    "label": "Kaniko run template name",
+    "defaultValue": "kaniko-runtemplate",
+    "helperText":
+      "ClusterRunTemplate used by Runnable component of this ClusterImageTemplate.<br/>OOTB: kaniko-runtemplate<br/>The ClusterRunTemplate can be created later on. However, it must exists for this ClusterImageTemplate to work.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Docker build context is required"]
+      }
+    ]
+  },
+
+  {
+    "usedin":"ClusterRunTemplate - eg: kaniko-runtemplate for Runnable - this is generic enough",
+    "type": "text",
+    "field": "CLUSTER_TASK_NAME",
+    "label": "Name of ClusterTask",
+    "defaultValue": "kaniko-build",
+    "helperText":
+      "example ClusterTask name: kaniko-build, trivvy-img-scanner etc.<br/>This ClusterTask name is referenced in ClusterRunTemplate which is referenced as Runnable in ClusterImageTemplate (eg: kaniko-runtemplate, custom-scanner etc).<br/>This ClusterTask and ClusterRunTemplate must exists for the referrer ClusterImageTemplate to work.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["ClusterTask name is required"]
+      }
+    ]
+  },
+
+
+  {
+    "usedin": "testing pipeline",
+    "type": "text",
+    "field": "CODE_TESTING_SOURCE_TEMPLATE_NAME",
+    "label": "Code Testing ClusterSourceTemplate name",
+    "defaultValue": "testing-pipeline",
+    "helperText":
+      "This ClusterSourceTemplate is for executing code testing. It is so heavily templated that you may be only will ever need one.<br/><em>Please check if the K8s cluster already has this type of template for testing (as this comes OOTB). If so re-use that one.</em>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["ClusterSourceTemplate Name is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "testing pipeline",
+    "type": "text",
+    "field": "CODE_TESTING_RUN_TEMPLATE_NAME",
+    "label": "Code Testing Run template name",
+    "defaultValue": "tekton-source-pipelinerun",
+    "helperText":
+      "ClusterRunTemplate used by Runnable component of this testing purpose ClusterSourceTemplate. This Runnable references a ClusterRunTemplate that runs the Tekton Pipeline(kind: Pipeline) for testing source code.<br/>OOTB: tekton-source-pipelinerun.<br/>This template is so heavily templated that you may only ever need one.<br/><em>Please check if the K8s cluster already has this type of template for running test pipeline (as this comes OOTB). If so re-use that one.</em>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["ClusterRunTemplate name is required"]
+      }
+    ]
+  },
+
+
+  {
+    "usedin":"custom scanner",
+    "type": "text",
+    "field": "CUSTOM_SCANNER_CONFIG_IN_K8S_SECRET",
+    "label": "Config K8s secret name",
+    "helperText":
+      "Provide the name of the secret (type: Opaque, with stringData:) that contains the config data for the scanning tool. This is a hack. In the ClusterTask implementation the secret is treated as volume and extract the content of the config.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Config Secret name is required"]
+      }
+    ]
+  },
+  {
+    "usedin":"custom scanner",
+    "type": "text",
+    "field": "CUSTOM_SCANNER_RUN_TEMPLATE_NAME",
+    "label": "Run Template Name",
+    "defaultValue": "tekton-source-pipelinerun",
+    "helperText":
+      "ClusterRunTemplate used by Runnable component of this scanning purpose ClusterImageTemplate. This ClusterRunTemplate (referenced in kind:Runnable) runs the Tekton ClusterTask for scanning code or image. <em>Ensure that you choose a unique name that does not exist in the K8s cluster.</em>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["ClusterRunTemplate name is required"]
+      }
+    ]
+  }
+]

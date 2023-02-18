@@ -1,0 +1,94 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterImageTemplate
+metadata:
+  name: <NAME>
+spec:
+  healthRule:
+    multiMatch:
+      healthy:
+        matchConditions:
+          - status: "True"
+            type: BuilderReady
+          - status: "True"
+            type: Ready
+      unhealthy:
+        matchConditions:
+          - status: "False"
+            type: BuilderReady
+          - status: "False"
+            type: Ready
+  imagePath: .status.latestImage
+  params:
+    - name: serviceAccount
+      default: <DEFAULT_SERVICE_ACCOUNT_NAME>
+    - name: clusterBuilder
+      default: <DEFAULT_KPACK_CLUSTER_BUILDER>
+    - name: registry
+      default: {}
+    - name: buildServiceBindings
+      default: []
+  ytt: |
+    #@ load("@ytt:data", "data")
+
+    #@ def merge_labels(fixed_values):
+    #@   labels = {}
+    #@   if hasattr(data.values.workload.metadata, "labels"):
+    #@     labels.update(data.values.workload.metadata.labels)
+    #@   end
+    #@   labels.update(fixed_values)
+    #@   return labels
+    #@ end
+
+    #@ def param(key):
+    #@   if not key in data.values.params:
+    #@     return None
+    #@   end
+    #@   return data.values.params[key]
+    #@ end
+
+    #@ def image():
+    #@   return "/".join([
+    #@    data.values.params.registry.server,
+    #@    data.values.params.registry.repository,
+    #@    "-".join([
+    #@      data.values.workload.metadata.name,
+    #@      data.values.workload.metadata.namespace,
+    #@    ])
+    #@   ])
+    #@ end
+
+    apiVersion: kpack.io/v1alpha2
+    kind: Image
+    metadata:
+      name: #@ data.values.workload.metadata.name
+      labels: #@ merge_labels({ "app.kubernetes.io/component": "build" })
+    spec:
+      tag: #@ image()
+      serviceAccountName: #@ data.values.params.serviceAccount
+      builder:
+        kind: ClusterBuilder
+        name: #@ data.values.params.clusterBuilder
+      source:
+        blob:
+          url: #@ data.values.source.url
+        #@ if hasattr(data.values.workload.spec, "source"):
+        #@ if/end hasattr(data.values.workload.spec.source, "subPath"):
+        subPath: #@ data.values.workload.spec.source.subPath
+        #@ end
+      build:
+        env:
+        - name: BP_OCI_SOURCE
+          value: #@ data.values.source.revision
+        #@ if/end param("live-update"):
+        - name: BP_LIVE_RELOAD_ENABLED
+          value: 'true'
+        #@ if hasattr(data.values.workload.spec.build, "env"):
+        #@ for var in data.values.workload.spec.build.env:
+        - name: #@ var.name
+          #@ if/end hasattr(var, "value"):
+          value: #@ var.value
+          #@ if/end hasattr(var, "valueFrom"):
+          valueFrom: #@ var.valueFrom
+        #@ end
+        #@ end
+        services: #@ data.values.params.buildServiceBindings

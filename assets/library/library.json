@@ -1,0 +1,234 @@
+[
+  {
+    "name": "GitOrImageOrMaven",
+    "title": "Repository OR Registry",
+    "description":
+      "Creates a ClusterSourceTemplate OR ClusterImageTemplate for getting Source Code from Git Reposioty OR Image from Image Registry.",
+    "icon": "get_app",
+    "options": [
+      {
+        "name": "GitRepository",
+        "value": "GitRepository",
+        "file": "cluster-source-template.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "consider creating secret",
+            "createYamlParam": "type=Utility&option=sshsecret"
+          },
+          {
+            "icon": "person",
+            "description": "consider creating Service Account",
+            "createYamlParam": "type=Utility&option=sa"
+          }
+        ]
+      },
+      {
+        "name": "ImageRegistry",
+        "value": "ImageRegistry",
+        "file": "cluster-image-template-image-provider.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "consider creating regitry secret",
+            "createYamlParam": "type=Utility&option=registrysecret"
+          },
+          {
+            "icon": "person",
+            "description": "consider creating Service Account",
+            "createYamlParam": "type=Utility&option=sa"
+          }
+        ]
+      }
+    ],
+    "file": "cluster-source-template.yaml"
+  },
+  {
+    "name": "BuildImage",
+    "title": "Image Build",
+    "description":
+      "Creates a ClusterImageTemplate to define how to make OCI Image and store it in the Image Registry.",
+    "icon": "image",
+    "options": [
+      {
+        "name": "Kpack",
+        "value": "Kpack",
+        "file": "cluster-image-template-kpack.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "consider creating registry secret",
+            "createYamlParam": "type=Utility&option=registrysecret"
+          },
+          {
+            "icon": "person",
+            "description": "consider creating Service Account",
+            "createYamlParam": "type=Utility&option=sa"
+          },
+          {
+            "icon": "image",
+            "description": "Have you configured cluster builder for kpack/tbs?"
+          }
+        ]
+      },
+      {
+        "name": "Kaniko",
+        "value": "Kaniko",
+        "file": "cluster-image-template-kaniko.yaml",
+        "suggestions": [
+          {
+            "icon": "person",
+            "description": "consider creating Service Account",
+            "createYamlParam": "type=Utility&option=sa"
+          },
+          {
+            "icon": "directions_run",
+            "description": "Have you Created ClusterRunTemplate for running Kaniko Task?",
+            "createYamlParam": "type=clusterruntemplate&option=imagebuildrunner"
+          },
+          {
+            "icon": "settings",
+            "description": "Have you Created Tekton task to be executed by the RunTemplate?",
+            "createYamlParam": "type=tekton&option=task"
+          }
+        ]
+      }
+    ],
+    "file": "cluster-image-template-kpack.yaml"
+  },
+  {
+    "name": "Security",
+    "title": "Security - Scanning",
+    "description":
+      "Creates a ClusterSourceTemplate for Source Code scanning OR ClusterImageTemplate for OCI Image scanning.",
+    "icon": "scanner",
+    "options": [
+      {
+        "name": "Source Scanner",
+        "value": "SourceScanner",
+        "file": "scanner-template-source.yaml"
+      },
+      {
+        "name": "Image Scanner",
+        "value": "ImageScanner",
+        "file": "scanner-template-image.yaml"
+      },
+      {
+        "name": "Custom Scanner",
+        "value": "CustomScanner",
+        "file": "scanner-template-custom-clustertask.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "Have you created K8s opaque secret to pass config for scanner?",
+            "createYamlParam": "type=Utility&option=opaquesecret"
+          },
+          {
+            "icon": "directions_run",
+            "description": "Have you Created ClusterRunTemplate for running scan task?",
+            "createYamlParam": "type=clusterruntemplate&option=imagebuildrunner"
+          },
+          {
+            "icon": "settings",
+            "description": "Have you Created Tekton task to be executed by the RunTemplate?",
+            "createYamlParam": "type=tekton&option=task"
+          }
+        ]
+      }
+    ],
+    "file": "scanner-template-image.yaml"
+  },
+  {
+    "name": "CodeTesting",
+    "title": "Code Testing",
+    "description": "Creates a ClusterSourceTemplate for executing tests against code.",
+    "icon": "bug_report",
+    "file": "code-testing-template.yaml",
+    "suggestions": [
+      {
+        "icon": "directions_run",
+        "description": "Have you Created ClusterRunTemplate for running Testing Task?",
+        "createYamlParam": "type=clusterruntemplate&option=imagebuildrunner"
+      },
+      {
+        "icon": "settings",
+        "description": "Have you created Tekton Task/Pipeline for running the test?",
+        "createYamlParam": "type=tekton&option=pipeline"
+      }
+    ]
+  },
+  {
+    "name": "clusterruntemplate",
+    "title": "Run Templates (Runnable)",
+    "description":
+      "Creates ClusterRunTemplate for running Tekton ClusterTasks (configure for image build [outputs: image-ref] ), Tekton Pipelines (for code testing [outputs: revision, url]). These ClusterRunTemplates are ususally referenced in Runnable section of other types of templates (eg: ClusterImageTemplate used for Kaniko image build, ClusterSourceTemplate used for running code testing etc). These templates are capable of running something (eg: Tekton Tasks, Pipelines, even Pods.) in a templated manner thus increasing the re-usability and modularity of a Tekton ClusterTask or Takton Pipeline etc. Select from the DropDown below the appropriate ClusterRunTemplate that you require.",
+    "icon": "ballot",
+    "options": [
+      {
+        "name": "Image Build Runner",
+        "value": "imagebuildrunner",
+        "file": "run-template-clustertask-image-build-runner.yaml",
+        "suggestions": [
+          {
+            "icon": "settings",
+            "description": "Have you created Tekton Task/Pipeline for running the test?",
+            "createYamlParam": "type=tekton&option=pipeline"
+          }
+        ]
+      },
+      {
+        "name": "Code Test Runner",
+        "value": "codetestrunner",
+        "file": "run-template-pipeline-code-test-runner.yaml"
+      },
+      {
+        "name": "Custom Scanner Runner",
+        "value": "scannerrunner",
+        "file": "run-template-clustertask-custom-scanner.yaml",
+        "suggestions": [
+          {
+            "icon": "settings",
+            "description": "Have you created Tekton Task to be executed by this RunTemplate?",
+            "createYamlParam": "type=tekton&option=task"
+          }
+        ]
+      }
+    ],
+    "file": "run-template-clustertask-custom-scanner.yaml"
+  },
+  {
+    "name": "Deployment",
+    "title": "Deployment Templates",
+    "description":
+      "Creates ClusterDeploymentTemplate for CD path. In a GitOps process when a deployable is pulled from the GitOps repository, the source/deployable is passed onto this deployment template. In the deployment template an appropriate deployment process (eg: Kapp or Helm) is then applied to deploy the deployable yaml or chart.",
+    "icon": "published_with_changes",
+    "options": [
+      {
+        "name": "Kapp Deployer",
+        "value": "kapp",
+        "file": "cluster-deployment-template-kapp.yaml",
+        "suggestions": [
+          {
+            "icon": "person",
+            "description":
+              "Service account mentioned here must exist in the namespace. If it does not, consider creating Service Account",
+            "createYamlParam": "type=Utility&option=sa"
+          }
+        ]
+      },
+      {
+        "name": "Kubectl Deployer",
+        "value": "kubectl",
+        "file": "cluster-deployment-template-kubectl.yaml"
+      },
+      {
+        "name": "Helm Deployer",
+        "value": "helm",
+        "file": "cluster-deployment-template-helm.yaml"
+      }
+    ],
+    "file": "cluster-deployment-template-kapp.yaml"
+  }
+]
+
+
