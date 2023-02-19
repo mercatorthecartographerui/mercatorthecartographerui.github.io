@@ -1,17 +1,14 @@
 [
   {
     "title": "CI: Source-Test-Scan-Deployable-gitops",
-    "description":
-      "This blueprint consists of templates and CI supply chain to create a production scenario. Please note: it produces the deployable to run on Cloud Native Runtime. If you do not want that please modify the config-writer.",
-    "blueprintYaml":
-      "/#/blueprint?file=/assets/maps/source-test-scan-cnrconfig-gitops/blueprint.yaml",
+    "description": "This blueprint consists of templates and CI supply chain to create a production scenario. Please note: it produces the deployable to run on Cloud Native Runtime. If you do not want that please modify the config-writer.",
+    "blueprintYaml": "/#/blueprint?file=/assets/maps/source-test-scan-cnrconfig-gitops/blueprint.yaml",
     "map": "/assets/maps/source-test-scan-cnrconfig-gitops/map.html",
     "image": "/assets/maps/source-test-scan-cnrconfig-gitops/image.png"
   },
   {
     "title": "CD: Simple GitOps+Kapp based deployment.",
-    "description":
-      "This blueprint consists of templates and CD delivery for a simple deployment scenario",
+    "description": "This blueprint consists of templates and CD delivery for a simple deployment scenario",
     "blueprintYaml": "/#/blueprint?file=/assets/maps/simple-kapp-gitops-deployment/blueprint.yaml",
     "map": "/assets/maps/simple-kapp-gitops-deployment/map.html",
     "image": "/assets/maps/simple-kapp-gitops-deployment/image.png"

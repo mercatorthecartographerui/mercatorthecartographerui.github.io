@@ -1,35 +1,210 @@
 <div>
-<img
-        src="/assets/maps/source-test-scan-cnrconfig-gitops/image.png"
-        useMap="#image-map"
-        alt="supply-chain-map"
+  <img
+    src="/assets/maps/source-test-scan-cnrconfig-gitops/image.png"
+    usemap="#image-map"
+    alt="supply-chain-map"
+  />
+
+  <map name="image-map">
+    <area
+      target="_self"
+      alt="Create Blueprint"
+      title="Create Blueprint"
+      href="/#/blueprint?blueprint=/assets/maps/source-test-scan-cnrconfig-gitops/blueprint.yaml"
+      coords="287,179,359,242"
+      shape="rect"
     />
-    
-    <map name="image-map">
-        <area target="_self" alt="Create Blueprint" title="Create Blueprint" href="/#/blueprint?blueprint=/assets/maps/source-test-scan-cnrconfig-gitops/blueprint.yaml" coords="287,179,359,242" shape="rect">
-        <area target="_self" alt="Create Blueprint" title="Create Blueprint" href="/#/blueprint?blueprint=/assets/maps/source-test-scan-cnrconfig-gitops/blueprint.yaml" coords="743,142,29" shape="circle">
-        <area target="_self" alt="Git Pull" title="Git Pull" href="/#/createyaml?type=GitOrImageOrMaven&amp;option=GitRepository" coords="558,202,668,257" shape="rect">
-        <area target="_self" alt="Git Pull" title="Git Pull" href="/#/createyaml?type=GitOrImageOrMaven&amp;option=GitRepository" coords="741,225,24" shape="circle">
-        <area target="_self" alt="Test Code" title="Test Code" href="/#/createyaml?type=CodeTesting" coords="557,286,668,342" shape="rect">
-        <area target="_self" alt="Test Code" title="Test Code" href="/#/createyaml?type=CodeTesting" coords="744,307,27" shape="circle">
-        <area target="_self" alt="Source Scan" title="Source Scan" href="/#/createyaml?type=Security&amp;option=SourceScanner" coords="558,371,668,424" shape="rect">
-        <area target="_self" alt="Source Scan" title="Source Scan" href="/#/createyaml?type=Security&amp;option=SourceScanner" coords="745,399,24" shape="circle">
-        <area target="_self" alt="Create OCI Image" title="Create OCI Image" href="/#/createyaml?type=BuildImage&amp;option=Kpack" coords="109,309,219,364" shape="rect">
-        <area target="_self" alt="Create OCI Image" title="Create OCI Image" href="/#/createyaml?type=BuildImage&amp;option=Kpack" coords="34,342,25" shape="circle">
-        <area target="_self" alt="Image Scan" title="Image Scan" href="/#/createyaml?type=Security&amp;option=ImageScanner" coords="111,409,220,468" shape="rect">
-        <area target="_self" alt="Image Scan" title="Image Scan" href="/#/createyaml?type=Security&amp;option=ImageScanner" coords="34,434,25" shape="circle">
-        <area target="_self" alt="Configure Pod Intent" title="Configure Pod Intent" href="/#/templates" coords="556,504,665,551" shape="rect">
-        <area target="_self" alt="Configure Pod Intent" title="Configure Pod Intent" href="/#/templates" coords="744,529,24" shape="circle">
-        <area target="_self" alt="Create Deployable KNative Config" title="Create Deployable KNative Config" href="/#/templates" coords="110,519,219,569" shape="rect">
-        <area target="_self" alt="Create Deployable KNative Config" title="Create Deployable KNative Config" href="/#/templates" coords="34,541,25" shape="circle">
-        <area target="_self" alt="Add Service Binding Projection" title="Add Service Binding Projection" href="/#/templates" coords="110,615,218,670" shape="rect">
-        <area target="_self" alt="Add Service Binding Projection" title="Add Service Binding Projection" href="/#/templates" coords="35,636,24" shape="circle">
-        <area target="_self" alt="Add API Configs" title="Add API Configs" href="/#/templates" coords="110,739,219,792" shape="rect">
-        <area target="_self" alt="Add API Configs" title="Add API Configs" href="/#/templates" coords="34,758,23" shape="circle">
-        <area target="_self" alt="GitOps - Push to GIT" title="GitOps - Push to GIT" href="/#/templates" coords="557,756,668,812" shape="rect">
-        <area target="_self" alt="GitOps - Push to GIT" title="GitOps - Push to GIT" href="/#/templates" coords="745,780,27" shape="circle">
-        <area target="_self" alt="Create Testing Task" title="Create Testing Task" href="/#/templates" coords="592,122,460,22" shape="rect">
-        <area target="_self" alt="Create GIT Writer Task" title="Create GIT Writer Task" href="/#/templates" coords="587,857,639,895" shape="rect">
-        <area target="_self" alt="Create Workload" title="Create Workload" href="/#/templates" coords="248,18,400,125" shape="rect">
-    </map>
+    <area
+      target="_self"
+      alt="Create Blueprint"
+      title="Create Blueprint"
+      href="/#/blueprint?blueprint=/assets/maps/source-test-scan-cnrconfig-gitops/blueprint.yaml"
+      coords="743,142,29"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Git Pull"
+      title="Git Pull"
+      href="/#/createyaml?type=GitOrImageOrMaven&amp;option=GitRepository"
+      coords="558,202,668,257"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Git Pull"
+      title="Git Pull"
+      href="/#/createyaml?type=GitOrImageOrMaven&amp;option=GitRepository"
+      coords="741,225,24"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Test Code"
+      title="Test Code"
+      href="/#/createyaml?type=CodeTesting"
+      coords="557,286,668,342"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Test Code"
+      title="Test Code"
+      href="/#/createyaml?type=CodeTesting"
+      coords="744,307,27"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Source Scan"
+      title="Source Scan"
+      href="/#/createyaml?type=Security&amp;option=SourceScanner"
+      coords="558,371,668,424"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Source Scan"
+      title="Source Scan"
+      href="/#/createyaml?type=Security&amp;option=SourceScanner"
+      coords="745,399,24"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Create OCI Image"
+      title="Create OCI Image"
+      href="/#/createyaml?type=BuildImage&amp;option=Kpack"
+      coords="109,309,219,364"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Create OCI Image"
+      title="Create OCI Image"
+      href="/#/createyaml?type=BuildImage&amp;option=Kpack"
+      coords="34,342,25"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Image Scan"
+      title="Image Scan"
+      href="/#/createyaml?type=Security&amp;option=ImageScanner"
+      coords="111,409,220,468"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Image Scan"
+      title="Image Scan"
+      href="/#/createyaml?type=Security&amp;option=ImageScanner"
+      coords="34,434,25"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Configure Pod Intent"
+      title="Configure Pod Intent"
+      href="/#/templates"
+      coords="556,504,665,551"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Configure Pod Intent"
+      title="Configure Pod Intent"
+      href="/#/templates"
+      coords="744,529,24"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Create Deployable KNative Config"
+      title="Create Deployable KNative Config"
+      href="/#/templates"
+      coords="110,519,219,569"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Create Deployable KNative Config"
+      title="Create Deployable KNative Config"
+      href="/#/templates"
+      coords="34,541,25"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Add Service Binding Projection"
+      title="Add Service Binding Projection"
+      href="/#/templates"
+      coords="110,615,218,670"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Add Service Binding Projection"
+      title="Add Service Binding Projection"
+      href="/#/templates"
+      coords="35,636,24"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Add API Configs"
+      title="Add API Configs"
+      href="/#/templates"
+      coords="110,739,219,792"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Add API Configs"
+      title="Add API Configs"
+      href="/#/templates"
+      coords="34,758,23"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="GitOps - Push to GIT"
+      title="GitOps - Push to GIT"
+      href="/#/templates"
+      coords="557,756,668,812"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="GitOps - Push to GIT"
+      title="GitOps - Push to GIT"
+      href="/#/templates"
+      coords="745,780,27"
+      shape="circle"
+    />
+    <area
+      target="_self"
+      alt="Create Testing Task"
+      title="Create Testing Task"
+      href="/#/templates"
+      coords="592,122,460,22"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Create GIT Writer Task"
+      title="Create GIT Writer Task"
+      href="/#/templates"
+      coords="587,857,639,895"
+      shape="rect"
+    />
+    <area
+      target="_self"
+      alt="Create Workload"
+      title="Create Workload"
+      href="/#/templates"
+      coords="248,18,400,125"
+      shape="rect"
+    />
+  </map>
 </div>

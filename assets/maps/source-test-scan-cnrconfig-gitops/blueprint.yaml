@@ -128,8 +128,8 @@ spec:
           - name: config-template
             selector:
               matchLabels:
-                - apps.tanzu.vmware.com/workload-type: web
-                - apps.tanzu.vmware.com/mode: custom
+                apps.tanzu.vmware.com/workload-type: web
+                apps.tanzu.vmware.com/mode: custom
       configs:
         - name: config
           resource: configure-pod-run
