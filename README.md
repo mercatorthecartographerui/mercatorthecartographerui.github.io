@@ -45,15 +45,32 @@ This UI is to complement the awesome [Cartographer.sh] (https://cartographer.sh)
 ---
 <br><br>
 
-## Customising or Configuring Mercator
+## Customising or Configuring Mercator (the UI)
 
 You can configure this tool with your own set of templates and blueprints (yaml files) and the organisation of it (eg: library, maps etc). 
 The UI shows differet types of data based on JSON files located under assets directory. You can modify these JSONs to display data (eg: Library, Blueprints etc) suiting to your needs.
 
 #### Configuring Library
+Mercator UI shows the tiles of the library page and presents the yaml files for template from a JSON file `/assets/library/library.json`. It is an array of objects. Each object represents a tile in the `Library` section. If a tile contains more than one option then the object has an `options` array of type object. See below diagram showing how the object is represented on the tile as we all in the template create/edit page.
+
+![Mercator - Configure Library](/assets/images/documentation/Mercator-Configure-Library.png "Mercator - Configure Library")
+
+#### Configure ClusterXTemplate Templatisation
+The UI tool understands a templatised yaml and displays it as a form. As the user fills the form the UI remplaces the templatised variables with the value collected from user input from the displayed form. The display of the form is dynamic in nature. Users can templatise a ClusterXTemplate and host it in a public repository OR file server. Then provide the URL of the file in the `Tile Object` OR (in the case of tile object has more that 1 options) in the `Option Object` in the `/assets/library/library.json` JSON file. See below as an example of Templatised ClusterSourceTemplate yaml. Notice the templatised variables in the `<VAR_NAME>` format.
+
+![Mercator - Templatised YAML](/assets/images/documentation/Mercator-Templatised-YAML.png "Mercator - Templatised YAML")
+
+#### Configure Form Schema
+Below is how the templatised variables are presented as form by the Mercator UI.
+
+![Mercator - Templatised ClusterSourceTemplate to Form](/assets/images/documentation/Mercator-Template-To-Form.png "Mercator - Templatised ClusterSourceTemplate to Form")
+
+Notce few more information that are getting displayed along side the input fields per template variables. These information are coming from another JSON file `/assets/library/schema.json`. The variable is represented here as object. The JSON file contains an array of these objects. 
+**Caution:** The var name must be unique in this file. This means that even if there are 2 different templates (eg: `ClusterSourceTemplate for GitPull` and `ClusterImageTemplate` for image scanning) contains the same template var (eg: `<NAME>`) there can only be one object in the `/assets/library/schema.json` JSON representing that template var (object name must be unique in the array). See below to understand what information is appearing from the JSON in the dynamic form.
+
+![Mercator - Form Schema](/assets/images/documentation/Mercator-Form-Schema.png "Mercator - Form Schema")
 
 
-
-
+#### Configure MAPs and Navigation from MAP
 
 

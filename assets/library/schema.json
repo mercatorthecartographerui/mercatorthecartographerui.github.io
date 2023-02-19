@@ -30,7 +30,7 @@
     ]
   },
   {
-    "usedin": "cluster source template",
+    "usedin": "cluster source template - git",
     "type": "text",
     "field": "PARAM_NAME_OF_SOURCE_GIT_SECRET",
     "label": "Source repo git secret name",
