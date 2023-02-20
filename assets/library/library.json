@@ -118,17 +118,17 @@
           {
             "icon": "password",
             "description": "Have you created K8s opaque secret to pass config for scanner?",
-            "createYamlParam": "type=Utility&option=opaquesecret"
+            "createYamlParam": "type=K8s&option=TrivyConfig"
           },
           {
             "icon": "directions_run",
             "description": "Have you Created ClusterRunTemplate for running scan task?",
-            "createYamlParam": "type=clusterruntemplate&option=imagebuildrunner"
+            "createYamlParam": "type=clusterruntemplate&option=scannerrunner"
           },
           {
             "icon": "settings",
             "description": "Have you Created Tekton task to be executed by the RunTemplate?",
-            "createYamlParam": "type=tekton&option=task"
+            "createYamlParam": "type=TektonObjects&option=TrivyScan"
           }
         ]
       }
@@ -199,7 +199,7 @@
           {
             "icon": "settings",
             "description": "Have you created Tekton Task to be executed by this RunTemplate?",
-            "createYamlParam": "type=tekton&option=task"
+            "createYamlParam": "type=TektonObjects&option=TrivyScan"
           }
         ]
       }
