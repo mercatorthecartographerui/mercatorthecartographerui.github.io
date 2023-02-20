@@ -4,7 +4,7 @@ See it in action at https://mercatorthecartographerui.github.io
 
 ![Cartographer.sh] (https://cartographer.sh) is a game changer in the DevSecOps domain. It has some huge benefits over what are currently available in the market such as Azure DevOps, Jenkins, Octupus etc. More to that, it is also open source, cloud native and runs on K8s.
 
-Users implements CI/CD path using Cartographer by defining the stages and the path itself through YAML files. Which means DevOpsASCode capability is an out-of-the-box feature of cartographer. This is great. But that also means implementing a CI/CD path using Cartographer is all done using yamls. Which may pore challenges such as:
+Users implements CI/CD path using Cartographer by defining the stages and the path itself through YAML files. Which means DevOpsASCode capability is an out-of-the-box feature of cartographer. This is great. But that also means implementations are all done through yamls. Which may pose challenges such as:
 - Users need to create and work with YAMLs only (and there are a lot of them). 
 - The YAMLs can seem complex in nature to many; as not everybody is comfortable with yamls.
 - Users will need to have clear understanding and planning before start creating CI CD using Cartographer.
