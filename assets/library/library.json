@@ -155,6 +155,20 @@
     ]
   },
   {
+    "name": "Configs",
+    "title": "Configuration Templates",
+    "description": "Creates a different types of ClusterConfigTemplates.",
+    "icon": "article",
+    "options": [
+      {
+        "name": "Deliverable Config",
+        "value": "DeliverableConfig",
+        "file": "/assets/library/yamls/cluster-config-template-deliverable-config.yaml"
+      }
+    ],
+    "file": "/assets/library/yamls/cluster-config-template-generic.yaml"
+  },
+  {
     "name": "clusterruntemplate",
     "title": "Run Templates (Runnable)",
     "description": "Creates ClusterRunTemplate for running Tekton ClusterTasks (configure for image build [outputs: image-ref] ), Tekton Pipelines (for code testing [outputs: revision, url]). These ClusterRunTemplates are ususally referenced in Runnable section of other types of templates (eg: ClusterImageTemplate used for Kaniko image build, ClusterSourceTemplate used for running code testing etc). These templates are capable of running something (eg: Tekton Tasks, Pipelines, even Pods.) in a templated manner thus increasing the re-usability and modularity of a Tekton ClusterTask or Takton Pipeline etc. Select from the DropDown below the appropriate ClusterRunTemplate that you require.",

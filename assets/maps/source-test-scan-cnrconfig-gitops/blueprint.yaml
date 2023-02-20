@@ -23,19 +23,19 @@ spec:
     - name: gitops_branch
       default: main
     - name: gitops_user_name
-      default: supplychain
+      default: mercator
     - name: gitops_user_email
-      default: supplychain
+      default: mercator@cluster.local
     - name: gitops_commit_message
-      default: sample
+      default: commit-from-mercator
     - name: gitops_ssh_secret
       default: git-ssh
     - name: gitops_server_address
-      default: https://github.com
+      default: ssh://git@github.com:22
     - name: gitops_repository_owner
       default: sampleusername
     - name: gitops_repository_name
-      default: https://github.com/sampleusrename/app_gitops
+      default: some-repository
   resources:
     - name: get-source
       templateRef:
