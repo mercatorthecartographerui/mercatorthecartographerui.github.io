@@ -1,0 +1,67 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: <NAME>
+spec:
+  description: |-
+    A task that uses trivy to scan source code or image
+  workspaces:
+    - name: <K8S_SECRET_CONTAINING_TRIVY_CONFIG>
+      optional: true
+      description: |
+        content of trivy-config.yaml
+  params:
+    - name: image-url
+      description: The image url
+      type: string
+      default: "none"
+    - name: blob-url
+      description: The source code blob url
+      type: string
+      default: "none"
+    - name: blob-revision
+      description: The source code blob revision, not currently used.
+      type: string
+      default: "none"
+    - name: args
+      type: string
+      default: "--severity CRITICAL --exit-code 1"
+  steps:
+    - name: trivy-scanner
+      image: centos:latest
+      env:
+        - name: WORKSPACE_TRIVY_CONFIG_BOUND
+          value: $(workspaces.<K8S_SECRET_CONTAINING_TRIVY_CONFIG>.bound)
+        - name: WORKSPACE_TRIVY_CONFIG_PATH
+          value: $(workspaces.<K8S_SECRET_CONTAINING_TRIVY_CONFIG>.path)
+      securityContext:
+        runAsUser: 0
+      workingDir: /root
+      script: |
+        #!/usr/bin/env bash
+        set -o errexit
+        set -o xtrace
+
+        if [ "${WORKSPACE_TRIVY_CONFIG_BOUND}" = "true" ] ; then
+          cp "${WORKSPACE_TRIVY_CONFIG_PATH}/.trivyconfig" "trivy-config.yaml"
+          chmod 755 "trivy-config.yaml"
+        fi
+
+
+        cd /etc/yum.repos.d/
+        sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+        cd ~
+        version=$(curl -s https://api.github.com/repos/aquasecurity/trivy/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        trivy_rpm=trivy_$(echo $version | sed 's/v//')_Linux-64bit.rpm
+        yum localinstall https://github.com/aquasecurity/trivy/releases/download/$version/$trivy_rpm -y
+
+        if [ "$(params.image-url)" != "none" ] ; then
+            # trivy image $(params.image-url) $(params.args)
+            trivy image --config ./trivy-config.yaml $(params.image-url)
+        elif [ "$(params.blob-url)" != "none" ] ; then
+            curl -SL $(params.blob-url) | tar xvzf - 
+            # trivy fs $(params.args) ./
+            trivy fs --config ./trivy-config.yaml ./
+        fi

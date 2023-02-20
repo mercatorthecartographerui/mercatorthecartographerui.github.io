@@ -181,8 +181,8 @@
   {
     "usedin": "custom scanner",
     "type": "text",
-    "field": "CUSTOM_SCANNER_CONFIG_IN_K8S_SECRET",
-    "label": "Config K8s secret name",
+    "field": "K8S_SECRET_CONTAINING_CUSTOM_SCANNER_CONFIG",
+    "label": "K8s secret name containing configs",
     "helperText": "Provide the name of the secret (type: Opaque, with stringData:) that contains the config data for the scanning tool. This is a hack. In the ClusterTask implementation the secret is treated as volume and extract the content of the config.",
     "validationType": "string",
     "validations": [
@@ -204,6 +204,22 @@
       {
         "type": "required",
         "params": ["ClusterRunTemplate name is required"]
+      }
+    ]
+  },
+
+
+  {
+    "usedin": "cluster-task-trivy-scanner",
+    "type": "text",
+    "field": "K8S_SECRET_CONTAINING_TRIVY_CONFIG",
+    "label": "K8s secret name containing trivy configs",
+    "helperText": "Provide the name of the secret (type: Opaque, with stringData:) that contains the config data for the scanning tool. This is a hack. In the ClusterTask implementation the secret is treated as volume and extract the content of the config.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Config Secret name is required"]
       }
     ]
   }

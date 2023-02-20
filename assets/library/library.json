@@ -222,5 +222,52 @@
       }
     ],
     "file": "/assets/library/yamls/cluster-deployment-template-kapp.yaml"
+  },
+  {
+    "name": "TektonObjects",
+    "title": "Tekton Objects",
+    "description": "Creates a Tekton Pipeline OR ClusterTask for running something by the runnable (from ClusterRunTemplate).",
+    "icon": "engineering",
+    "options": [
+      {
+        "name": "Trivy Scan",
+        "value": "TrivyScan",
+        "file": "/assets/library/yamls/cluster-task-trivy-scanner.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "consider creating trivy config secret",
+            "createYamlParam": "type=K8s&option=TrivyConfig"
+          }
+        ]
+      },
+      {
+        "name": "Sonarcube Scan",
+        "value": "SonarcureScan",
+        "file": "/assets/library/yamls/cluster-task-sonarcube-scanner.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "consider creating sonarcube secret",
+            "createYamlParam": "type=K8s&option=SonarcubeConfig"
+          }
+        ]
+      }
+    ],
+    "file": "/assets/library/yamls/cluster-task-trivy-scanner.yaml"
+  },
+  {
+    "name": "K8s",
+    "title": "K8s Objects",
+    "description": "Creates a different type of K8s native resource (eg: secrets, service account etc).",
+    "icon": "article",
+    "options": [
+      {
+        "name": "Trivy Config",
+        "value": "TrivyConfig",
+        "file": "/assets/library/yamls/k8s-secret-trivy-config.yaml"
+      }
+    ],
+    "file": "/assets/library/yamls/k8s-secret-opaque.yaml"
   }
 ]

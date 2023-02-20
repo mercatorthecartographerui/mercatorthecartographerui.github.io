@@ -16,7 +16,7 @@ spec:
       workspaces:
         - name: config
           secret:
-            secretName: <CUSTOM_SCANNER_CONFIG_IN_K8S_SECRET> #$(runnable.spec.inputs.config_secret)$
+            secretName: <K8S_SECRET_CONTAINING_CUSTOM_SCANNER_CONFIG> #$(runnable.spec.inputs.config_secret)$
       params: $(runnable.spec.inputs.params)$
       serviceAccountName: $(runnable.spec.inputs.serviceAccount)$
       taskRef:
