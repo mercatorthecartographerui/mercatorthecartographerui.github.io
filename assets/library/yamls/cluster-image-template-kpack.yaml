@@ -23,14 +23,10 @@ spec:
       default: <DEFAULT_SERVICE_ACCOUNT_NAME>
     - name: clusterBuilder
       default: <DEFAULT_KPACK_CLUSTER_BUILDER>
-    - name: registry
-      default: {}
-    - name: buildServiceBindings
-      default: []
   ytt: |
     #@ load("@ytt:data", "data")
 
-    #@ def merge_labels(fixed_values):
+    #@ def addLabels(fixed_values):
     #@   labels = {}
     #@   if hasattr(data.values.workload.metadata, "labels"):
     #@     labels.update(data.values.workload.metadata.labels)
@@ -39,20 +35,13 @@ spec:
     #@   return labels
     #@ end
 
-    #@ def param(key):
-    #@   if not key in data.values.params:
-    #@     return None
-    #@   end
-    #@   return data.values.params[key]
-    #@ end
-
-    #@ def image():
+    #@ def makeTag():
     #@   return "/".join([
     #@    data.values.params.registry.server,
     #@    data.values.params.registry.repository,
     #@    "-".join([
     #@      data.values.workload.metadata.name,
-    #@      data.values.workload.metadata.namespace,
+    #@      data.values.workload.metadata.namespace
     #@    ])
     #@   ])
     #@ end
@@ -61,9 +50,9 @@ spec:
     kind: Image
     metadata:
       name: #@ data.values.workload.metadata.name
-      labels: #@ merge_labels({ "app.kubernetes.io/component": "build" })
+      labels: #@ addLabels({ "app.kubernetes.io/component": "build" })
     spec:
-      tag: #@ image()
+      tag: #@ makeTag()
       serviceAccountName: #@ data.values.params.serviceAccount
       builder:
         kind: ClusterBuilder
@@ -79,9 +68,6 @@ spec:
         env:
         - name: BP_OCI_SOURCE
           value: #@ data.values.source.revision
-        #@ if/end param("live-update"):
-        - name: BP_LIVE_RELOAD_ENABLED
-          value: 'true'
         #@ if hasattr(data.values.workload.spec.build, "env"):
         #@ for var in data.values.workload.spec.build.env:
         - name: #@ var.name
@@ -91,4 +77,3 @@ spec:
           valueFrom: #@ var.valueFrom
         #@ end
         #@ end
-        services: #@ data.values.params.buildServiceBindings

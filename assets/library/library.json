@@ -143,14 +143,9 @@
     "file": "/assets/library/yamls/code-testing-template.yaml",
     "suggestions": [
       {
-        "icon": "directions_run",
-        "description": "Have you Created ClusterRunTemplate for running Testing Task?",
-        "createYamlParam": "type=clusterruntemplate&option=imagebuildrunner"
-      },
-      {
         "icon": "settings",
         "description": "Have you created Tekton Task/Pipeline for running the test?",
-        "createYamlParam": "type=tekton&option=pipeline"
+        "createYamlParam": "type=TektonObjects&option=MavenTask"
       }
     ]
   },
@@ -244,9 +239,21 @@
     "icon": "engineering",
     "options": [
       {
+        "name": "Maven Test Runner",
+        "value": "MavenTest",
+        "file": "/assets/library/yamls/tekton-cluster-pipeline-test-maven.yaml",
+        "suggestions": [
+          {
+            "icon": "directions_run",
+            "description": "Have you Created ClusterSourceTemplate & ClusterRunTemplate for running this Testing Pipeline?",
+            "createYamlParam": "type=CodeTesting"
+          }
+        ]
+      },
+      {
         "name": "Trivy Scan",
         "value": "TrivyScan",
-        "file": "/assets/library/yamls/cluster-task-trivy-scanner.yaml",
+        "file": "/assets/library/yamls/tekton-cluster-task-trivy-scanner.yaml",
         "suggestions": [
           {
             "icon": "password",
@@ -268,7 +275,7 @@
         ]
       }
     ],
-    "file": "/assets/library/yamls/cluster-task-trivy-scanner.yaml"
+    "file": "/assets/library/yamls/tekton-cluster-task-trivy-scanner.yaml"
   },
   {
     "name": "K8s",

@@ -1,0 +1,30 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: <NAME>
+  labels:
+    apps.tanzu.vmware.com/pipeline: test # (!) required
+    apps.tanzu.vmware.com/language: java # tap1.3 multi-pipeline functionality
+spec:
+  params:
+    - name: source-url # (!) required
+    - name: source-revision # (!) required
+  tasks:
+    - name: test
+      params:
+        - name: source-url
+          value: $(params.source-url)
+        - name: source-revision
+          value: $(params.source-revision)
+      taskSpec:
+        params:
+          - name: source-url
+          - name: source-revision
+        steps:
+          - name: test
+            image: <MAVEN_IMAGE>
+            script: |-
+              cd `mktemp -d`
+
+              curl -SL $(params.source-url) | tar xvzf -
+              <TESTING_COMMAND>

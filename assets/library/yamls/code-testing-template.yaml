@@ -8,16 +8,16 @@ spec:
   healthRule:
     singleConditionType: Ready
   params:
-    - default:
+    - name: testing_pipeline_matching_labels
+      default:
         apps.tanzu.vmware.com/pipeline: test
-      name: testing_pipeline_matching_labels
   revisionPath: .status.outputs.revision
   urlPath: .status.outputs.url
   ytt: |
     #@ load("@ytt:data", "data")
     #@ load("@ytt:yaml", "yaml")
 
-    #@ def merge_labels(fixed_values):
+    #@ def addLabels(fixed_values):
     #@   labels = {}
     #@   if hasattr(data.values.workload.metadata, "labels"):
     #@     labels.update(data.values.workload.metadata.labels)
@@ -42,7 +42,7 @@ spec:
     kind: Runnable
     metadata:
       name: #@ data.values.workload.metadata.name
-      labels: #@ merge_labels({ "app.kubernetes.io/component": "test" })
+      labels: #@ addLabels({ "app.kubernetes.io/component": "test" })
     spec:
       #@ if/end hasattr(data.values.workload.spec, "serviceAccountName"):
       serviceAccountName: #@ data.values.workload.spec.serviceAccountName
@@ -62,7 +62,7 @@ spec:
 apiVersion: carto.run/v1alpha1
 kind: ClusterRunTemplate
 metadata:
-  # tekton-source-pipelinerun
+  # test-run
   name: <CODE_TESTING_RUN_TEMPLATE_NAME>
 spec:
   outputs:

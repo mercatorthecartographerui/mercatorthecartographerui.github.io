@@ -210,7 +210,7 @@
 
 
   {
-    "usedin": "cluster-task-trivy-scanner",
+    "usedin": "tekton-cluster-task-trivy-scanner",
     "type": "text",
     "field": "K8S_SECRET_CONTAINING_TRIVY_CONFIG",
     "label": "K8s secret name containing trivy configs",
@@ -220,6 +220,36 @@
       {
         "type": "required",
         "params": ["Config Secret name is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "tekton-cluster-pipeline-test-maven",
+    "type": "text",
+    "field": "MAVEN_IMAGE",
+    "label": "maven image",
+    "defaultValue": "maven:3.8.5-openjdk-18-slim",
+    "helperText": "Provide the name and tag (to get from dockerhub) OR full path (to get from private registry) of the maven image that will be used to start the container inside which maven test command will be run. eg:maven:3.8.5-openjdk-18-slim, mypvt.acr.io/utils/maven:approved etc",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["maven image is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "tekton-cluster-pipeline-test-maven",
+    "type": "text",
+    "field": "TESTING_COMMAND",
+    "label": "test command",
+    "defaultValue": "mvn test",
+    "helperText": "Provide (the 1 liner) command to run to execute test cases. eg: mvn test",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["test command is required"]
       }
     ]
   }
