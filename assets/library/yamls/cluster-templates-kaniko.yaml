@@ -1,0 +1,173 @@
+---
+apiVersion: carto.run/v1alpha1
+kind: ClusterImageTemplate
+metadata:
+  name: <NAME>
+spec:
+  healthRule:
+    singleConditionType: Ready
+  imagePath: .status.outputs.image-ref
+  params:
+    - name: serviceAccount
+      default: <DEFAULT_SERVICE_ACCOUNT_NAME>
+    - name: registry
+      default: {}
+    - name: dockerfile
+      default: "<DEFAULT_DOCKERFILE>"
+    - name: docker_build_context
+      default: <DEFAULT_DOCKER_BUILD_CONTEXT>
+    - name: docker_build_extra_args
+      default: []
+  ytt: |
+    #@ load("@ytt:data", "data")
+
+    #@ def addLabels(fixed_values):
+    #@   labels = {}
+    #@   if hasattr(data.values.workload.metadata, "labels"):
+    #@     labels.update(data.values.workload.metadata.labels)
+    #@   end
+    #@   labels.update(fixed_values)
+    #@   return labels
+    #@ end
+
+    #@ def image():
+    #@   return "/".join([
+    #@    data.values.params.registry.server,
+    #@    data.values.params.registry.repository,
+    #@    "-".join([
+    #@      data.values.workload.metadata.name,
+    #@      data.values.workload.metadata.namespace,
+    #@    ])
+    #@   ])
+    #@ end
+
+    ---
+    apiVersion: carto.run/v1alpha1
+    kind: Runnable
+    metadata:
+      name: #@ data.values.workload.metadata.name + "-build"
+      labels: #@ addLabels({ "app.kubernetes.io/component": "build" })
+    spec:
+      #@ if/end hasattr(data.values.workload.spec, "serviceAccountName"):
+      serviceAccountName: #@ data.values.workload.spec.serviceAccountName
+
+      runTemplateRef:
+        name: <KANIKO_RUN_TEMPLATE_NAME>
+
+      inputs:
+        serviceAccount: #@ data.values.params.serviceAccount
+        params:
+          - name: image
+            value: #@ image()
+          - name: source_tar
+            value: #@ data.values.source.url
+          - name: dockerfile
+            value: #@ data.values.params.dockerfile
+          - name: context
+            value: #@ data.values.params.docker_build_context
+          - name: extra_args
+            value: #@ data.values.params.docker_build_extra_args
+---
+apiVersion: carto.run/v1alpha1
+kind: ClusterRunTemplate
+metadata:
+  name: <KANIKO_RUN_TEMPLATE_NAME>
+spec:
+  outputs:
+    image-ref: .status.taskResults[?(@.name=="image_url")].value
+  template:
+    apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: $(runnable.metadata.name)$-
+      labels: $(runnable.metadata.labels)$
+    spec:
+      workspaces:
+        - name: dockerconfig
+          secret:
+            secretName: <K8S_SECRET_FOR_IMAGE_REGISTRY_CREDENTIAL>
+      params: $(runnable.spec.inputs.params)$
+      serviceAccountName: $(runnable.spec.inputs.serviceAccount)$
+      taskRef:
+        kind: ClusterTask
+        name: <KANIKO_BUILD_TEKTON_TASK_NAME>
+---
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: <KANIKO_BUILD_TEKTON_TASK_NAME>
+spec:
+  description: This task builds based on Dockerfile with kaniko and pushes to a registry.
+  params:
+    - name: source_tar
+      type: string
+      description: source code
+    - name: image
+      type: string
+      description: image:tag of the image to be built.
+    - name: dockerfile
+      default: ./Dockerfile
+      type: string
+      description: Dockerfile path.
+    - name: context
+      default: .
+      type: string
+      description: Docker build context.
+    - name: extra_args
+      default: []
+      type: array
+      description: Extra args.
+  workspaces:
+    - name: dockerconfig
+      optional: true
+      mountPath: /kaniko/.docker
+      description: Includes a docker `config.json`
+  results:
+    - name: image_digest
+      type: string
+      description: Digest of the image just built.
+    - name: image_url
+      type: string
+      description: Ref of the image just built.
+  volumes:
+    - emptyDir: {}
+      name: source-dir
+  steps:
+    - name: get-docker-source
+      image: centos:latest
+      script: |
+        #!/usr/bin/env bash
+
+        set -o errexit
+        set -o xtrace
+
+        cd `mktemp -d`
+        curl -SL $(params.source_tar) | tar --no-overwrite-dir -xzf - -C /source
+      volumeMounts:
+        - name: source-dir
+          mountPath: /source
+    - name: build-and-push
+      workingDir: /root
+      image: gcr.io/kaniko-project/executor:latest
+      args:
+        - $(params.extra_args)
+        - --dockerfile=$(params.dockerfile)
+        - --context=dir:///source/$(params.context)
+        - --destination=$(params.image)
+        - --digest-file=$(results.image_digest.path)
+      # kaniko assumes it is running as root, which means this example fails on platforms
+      # that default to run containers as random uid (like OpenShift). Adding this securityContext
+      # makes it explicit that it needs to run as root.
+      securityContext:
+        runAsUser: 0
+      volumeMounts:
+        - name: source-dir
+          mountPath: /source
+    - name: write-url
+      image: docker.io/library/bash:5.2.15@sha256:3356cda0c50709e89c6e449985828414d20ddae00651893aa8a57ce5b404630f
+      script: |
+        #!/usr/bin/env bash
+
+        set -e
+        image="$(params.image)"
+        echo -n "${image}" | tee "$(results.image_url.path)"

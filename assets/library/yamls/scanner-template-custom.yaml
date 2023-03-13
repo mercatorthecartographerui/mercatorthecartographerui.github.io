@@ -1,0 +1,71 @@
+---
+apiVersion: carto.run/v1alpha1
+kind: ClusterImageTemplate
+metadata:
+  #trivy.template_name
+  name: <NAME>
+spec:
+  imagePath: .status.outputs.latestImage
+
+  params:
+    - name: serviceAccount
+      default: <DEFAULT_SERVICE_ACCOUNT_NAME>
+    - name: config_secret
+      default: <K8S_SECRET_CONTAINING_CUSTOM_SCANNER_CONFIG>
+
+  ytt: |
+    #@ load("@ytt:data", "data")
+
+    #@ def merge_labels(fixed_values):
+    #@   labels = {}
+    #@   if hasattr(data.values.workload.metadata, "labels"):
+    #@     labels.update(data.values.workload.metadata.labels)
+    #@   end
+    #@   labels.update(fixed_values)
+    #@   return labels
+    #@ end
+
+    ---
+    apiVersion: carto.run/v1alpha1
+    kind: Runnable
+    metadata:
+      name: #@ data.values.workload.metadata.name + "-scan"
+      labels: #@ merge_labels({ "app.kubernetes.io/component": "image-scan" })
+    spec:
+      #@ if/end hasattr(data.values.workload.spec, "serviceAccountName"):
+      serviceAccountName: #@ data.values.workload.spec.serviceAccountName
+
+      runTemplateRef:
+        name: <CUSTOM_SCANNER_RUN_TEMPLATE_NAME>
+
+      inputs:
+        serviceAccount: #@ data.values.params.serviceAccount
+        config_secret: $(params.config_secret)$
+        params:
+          - name: image-url
+            value: $(image)$
+---
+apiVersion: carto.run/v1alpha1
+kind: ClusterRunTemplate
+metadata:
+  name: <CUSTOM_SCANNER_RUN_TEMPLATE_NAME>
+spec:
+  outputs:
+    latestImage: spec.params[?(@.name=="image-url")].value
+
+  template:
+    apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: $(runnable.metadata.name)$-
+      labels: $(runnable.metadata.labels)$
+    spec:
+      workspaces:
+        - name: <TEKTON_CLUSTER_TASK_WORKSPACE_NAME>
+          secret:
+            secretName: <K8S_SECRET_CONTAINING_CUSTOM_SCANNER_CONFIG> #$(runnable.spec.inputs.config_secret)$
+      params: $(runnable.spec.inputs.params)$
+      serviceAccountName: $(runnable.spec.inputs.serviceAccount)$
+      taskRef:
+        kind: ClusterTask
+        name: <CLUSTER_TASK_NAME>

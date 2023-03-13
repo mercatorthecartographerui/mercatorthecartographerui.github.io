@@ -72,22 +72,12 @@
       {
         "name": "Kaniko",
         "value": "Kaniko",
-        "file": "/assets/library/yamls/cluster-image-template-kaniko.yaml",
+        "file": "/assets/library/yamls/cluster-templates-kaniko.yaml",
         "suggestions": [
           {
             "icon": "person",
             "description": "consider creating Service Account",
             "createYamlParam": "type=Utility&option=sa"
-          },
-          {
-            "icon": "directions_run",
-            "description": "Have you Created ClusterRunTemplate for running Kaniko Task?",
-            "createYamlParam": "type=clusterruntemplate&option=imagebuildrunner"
-          },
-          {
-            "icon": "settings",
-            "description": "Have you Created Tekton task to be executed by the RunTemplate?",
-            "createYamlParam": "type=tekton&option=task"
           }
         ]
       }
@@ -113,17 +103,12 @@
       {
         "name": "Custom Scanner",
         "value": "CustomScanner",
-        "file": "/assets/library/yamls/scanner-template-custom-clustertask.yaml",
+        "file": "/assets/library/yamls/scanner-template-custom.yaml",
         "suggestions": [
           {
             "icon": "password",
             "description": "Have you created K8s opaque secret to pass config for scanner?",
             "createYamlParam": "type=K8s&option=TrivyConfig"
-          },
-          {
-            "icon": "directions_run",
-            "description": "Have you Created ClusterRunTemplate for running scan task?",
-            "createYamlParam": "type=clusterruntemplate&option=scannerrunner"
           },
           {
             "icon": "settings",
@@ -185,21 +170,9 @@
         "name": "Code Test Runner",
         "value": "codetestrunner",
         "file": "/assets/library/yamls/run-template-pipeline-code-test-runner.yaml"
-      },
-      {
-        "name": "Custom Scanner Runner",
-        "value": "scannerrunner",
-        "file": "/assets/library/yamls/run-template-clustertask-custom-scanner.yaml",
-        "suggestions": [
-          {
-            "icon": "settings",
-            "description": "Have you created Tekton Task to be executed by this RunTemplate?",
-            "createYamlParam": "type=TektonObjects&option=TrivyScan"
-          }
-        ]
       }
     ],
-    "file": "/assets/library/yamls/run-template-clustertask-custom-scanner.yaml"
+    "file": "/assets/library/yamls/run-template-pipeline-code-test-runner.yaml"
   },
   {
     "name": "Deployment",

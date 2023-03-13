@@ -7,7 +7,7 @@ spec:
   description: |-
     A task that uses trivy to scan source code or image
   workspaces:
-    - name: <K8S_SECRET_CONTAINING_TRIVY_CONFIG>
+    - name: <TEKTON_CLUSTER_TASK_WORKSPACE_NAME>
       optional: true
       description: |
         content of trivy-config.yaml

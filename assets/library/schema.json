@@ -126,7 +126,36 @@
     "validations": [
       {
         "type": "required",
-        "params": ["Docker build context is required"]
+        "params": ["Kaniko run template name is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "ClusterRunTemplate, ClusterTask eg: cluster-templates-kaniko - KANIKO",
+    "type": "text",
+    "field": "KANIKO_BUILD_TEKTON_TASK_NAME",
+    "label": "Tekton Task Name for Kaniko build",
+    "defaultValue": "kaniko-buil-clustertask",
+    "helperText": "The name for Tekton ClusterTask Object.<br/>TAP OOTB ClusterTask name: kaniko-build.<br/><em>If you are using Tanzu Application Platform then run kubectl get clustertask to check if cluster task already exists for this purpose. If it already exists no need to create another one. Highly recommended to re-use what already exists.<em/>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Tekton Task Name is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "ClusterRunTemplate eg: cluster-templates-kaniko - KANIKO",
+    "type": "text",
+    "field": "K8S_SECRET_FOR_IMAGE_REGISTRY_CREDENTIAL",
+    "label": "K8s secret for image registry",
+    "helperText": "The name of the K8s secret. The secret can be created at a later stage. BUT it must exist in the cluster and namespace for this to work.<br/>eg: run this command to create the secret: <code>kubectl create secret docker-registry <K8S_SECRET_FOR_IMAGE_REGISTRY_CREDENTIAL> --docker-server <REGISTRY_SERVER> --docker-username <USERNAME> --docker-password <TOKEN> --docker-email <EMAIL_ADDR> --namespace <DEVELOPER_NAMESPACE> </code>. <br/><em>If you are using Tanzu Application Platform then run kubectl get clustertask to check if cluster task already exists for this purpose. If it already exists no need to create another one. Highly recommended to re-use what already exists.<em/>",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Docker registry credential name is required"]
       }
     ]
   },
@@ -146,7 +175,21 @@
       }
     ]
   },
-
+  {
+    "usedin": "ClusterRunTemplate & ClusterTask - eg: scanner-template-custom, tekton-cluster-task-trivvy - this is generic enough",
+    "type": "text",
+    "field": "TEKTON_CLUSTER_TASK_WORKSPACE_NAME",
+    "label": "Name of Workspace",
+    "defaultValue": "config",
+    "helperText": "This is the workspace name to be used in Tekton ClusterTask. For custom scanner a (k8s opaque type) secret (containing the config for scanner) is mounted as volume.<br/><i>This template uses a k8s secret containing config for scanner which is not the best practice. TODO: use config map instead.</i><br/>For example: a volume name 'config' of type secret is mounted in the workspace in the tekton TaskRun for Tekton ClusterTask trivvy-scanner.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Workspace name is required"]
+      }
+    ]
+  },
   {
     "usedin": "testing pipeline",
     "type": "text",
@@ -197,8 +240,8 @@
     "type": "text",
     "field": "CUSTOM_SCANNER_RUN_TEMPLATE_NAME",
     "label": "Run Template Name",
-    "defaultValue": "tekton-source-pipelinerun",
-    "helperText": "ClusterRunTemplate used by Runnable component of this scanning purpose ClusterImageTemplate. This ClusterRunTemplate (referenced in kind:Runnable) runs the Tekton ClusterTask for scanning code or image. <em>Ensure that you choose a unique name that does not exist in the K8s cluster.</em>",
+    "defaultValue": "scanner-run",
+    "helperText": "ClusterRunTemplate used by Runnable component for scanning purpose. This ClusterRunTemplate (referenced in kind:Runnable) runs the Tekton ClusterTask for scanning code or image. <em>Ensure that you choose a unique name that does not exist in this K8s cluster.</em>",
     "validationType": "string",
     "validations": [
       {
@@ -208,7 +251,21 @@
     ]
   },
 
-
+  {
+    "usedin": "ClusterRunTemplate - eg: kaniko-runtemplate for Runnable - this is generic enough",
+    "type": "text",
+    "field": "CLUSTER_TASK_NAME",
+    "label": "Name of ClusterTask",
+    "defaultValue": "kaniko-build",
+    "helperText": "example ClusterTask name: kaniko-build, trivvy-img-scanner etc.<br/>This ClusterTask name is referenced in ClusterRunTemplate which is referenced as Runnable in ClusterImageTemplate (eg: kaniko-runtemplate, custom-scanner etc).<br/>This ClusterTask and ClusterRunTemplate must exists for the referrer ClusterImageTemplate to work.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["ClusterTask name is required"]
+      }
+    ]
+  },
   {
     "usedin": "tekton-cluster-task-trivy-scanner",
     "type": "text",
