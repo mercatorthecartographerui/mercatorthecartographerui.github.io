@@ -20,7 +20,7 @@ spec:
   imagePath: .status.latestImage
   params:
     - name: serviceAccount
-      default: <DEFAULT_SERVICE_ACCOUNT_NAME>
+      default: <DEFAULT_SERVICE_ACCOUNT>
     - name: clusterBuilder
       default: <DEFAULT_KPACK_CLUSTER_BUILDER>
   ytt: |

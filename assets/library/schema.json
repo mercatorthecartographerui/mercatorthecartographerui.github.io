@@ -16,7 +16,7 @@
   {
     "usedin": "common",
     "type": "text",
-    "field": "DEFAULT_SERVICE_ACCOUNT_NAME",
+    "field": "DEFAULT_SERVICE_ACCOUNT",
     "label": "Default Service account",
     "defaultValue": "default",
     "helperText": "Service account is used by the cartographer to access secrets for getting or pushing data from or to external sources such as git repo, image registry etc.<br/><em>If no parameters is supplied from ClusterSupplyChain(blueprint) OR Workload(owner) then this default value is used.</em>",
@@ -307,6 +307,137 @@
       {
         "type": "required",
         "params": ["test command is required"]
+      }
+    ]
+  },
+
+
+  {
+    "usedin": "cluster-templates-git-push",
+    "type": "text",
+    "field": "DEFAULT_GITOPS_SSH_SECRET",
+    "label": "default ssh secret for gitops",
+    "defaultValue": "git-ssh",
+    "helperText": "this secret is used to by cartographer task during git-push operation to access repository",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["default ssh secret is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster-templates-git-push",
+    "type": "text",
+    "field": "DEFAULT_GITOPS_SERVER_ADDRESS",
+    "label": "Default Git repository server address for gitops",
+    "defaultValue": "ssh://git@github.com",
+    "helperText": "Note: This is default value only and can be overriden from SupplyChain (and if supplychain is also using default then value can come from workload). The server address eg: ssh://git@github.com. (Note: Just the server address. MUST NOT the entire repository address). MUST be in ssh:// url.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Default Git repository server address is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster-templates-git-push",
+    "type": "text",
+    "field": "DEFAULT_GITOPS_REPOSITORY_OWNER",
+    "label": "Default Git repository owner for gitops",
+    "helperText": "Note: This is default value only and can be overriden from SupplyChain (and if supplychain is also using default then value can come from workload). The owner of the repository eg: accordingtoali. Provide just the the owner name. This will form the url. Do not provide the entire url.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Default Git repository owner is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster-templates-git-push",
+    "type": "text",
+    "field": "DEFAULT_GITOPS_REPOSITORY_NAME",
+    "label": "Default Git repository name for gitops",
+    "helperText": "Note: This is default value only and can be overriden from SupplyChain (and if supplychain is also using default then value can come from workload). The name of the reposiroty eg: accordingtoali. Provide just the the repository name. This will form the url. Do not provide the entire url.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Default Git repository name is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "cluster-templates-git-push",
+    "type": "text",
+    "field": "DEFAULT_GITOPS_REPOSITORY_BRANCH",
+    "label": "Default Git repository branch for gitops",
+    "helperText": "Note: This is default value only and can be overriden from SupplyChain (and if supplychain is also using default then value can come from workload). The branch of the reposiroty eg: main. Provide just the the repository branch. This will form the url. Do not provide the entire url.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Default Git repository branch is required"]
+      }
+    ]
+  },
+
+  {
+    "usedin": "k8s-secret-git-ssh",
+    "type": "text",
+    "field": "GIT_SERVER_HOST",
+    "label": "Git server host",
+    "helperText": "The hostname of the git server. eg: github.com, bitbucket.org, ssh.dev.azure.com etc",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Git server host is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "k8s-secret-git-ssh",
+    "type": "text",
+    "field": "GIT_SSH_PRIVATE_KEY",
+    "label": "ssh private key",
+    "helperText": "The base64 private key of the ssh-key-pair generated for this git repository.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["SSH private key is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "k8s-secret-git-ssh",
+    "type": "text",
+    "field": "GIT_SSH_PUBLIC_KEY",
+    "label": "ssh public key",
+    "helperText": "The base64 public key of the ssh-key-pair generated for this git repository. When adding to git repositority please make sure that it has push-permissions.",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["SSH private key is required"]
+      }
+    ]
+  },
+  {
+    "usedin": "k8s-secret-git-ssh",
+    "type": "text",
+    "field": "GIT_SERVER_KNOWN_HOSTS",
+    "label": "Known hosts content for git server",
+    "helperText": "The base64 encoded generated content for known hosts for this git server. eg: run ssh-keyscan YOU_GIT_SERVER | base64 -w 0",
+    "validationType": "string",
+    "validations": [
+      {
+        "type": "required",
+        "params": ["Known hosts is required"]
       }
     ]
   }

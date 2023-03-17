@@ -1,0 +1,53 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterConfigTemplate
+metadata:
+  name: <NAME>
+spec:
+  configPath: .data.manifest
+  params:
+    - name: serviceAccount
+      default: <DEFAULT_SERVICE_ACCOUNT>
+  ytt: |
+    #@ load("@ytt:data", "data")
+    #@ load("@ytt:yaml", "yaml")
+
+    #@ def manifest():
+    manifest.yaml: #@ yaml.encode(service())
+    #@ end
+
+
+    #@ def service():
+    apiVersion: serving.knative.dev/v1
+    kind: Service
+    metadata:
+      name: #@ data.values.workload.metadata.name
+      labels:
+        ootb.apps.tanzu.vmware.com/servicebinding-workload: "true"
+        ootb.apps.tanzu.vmware.com/apidescriptor-ref: "true"
+        #@ if hasattr(data.values.workload.metadata, "labels"):
+        #@ if hasattr(data.values.workload.metadata.labels, "app.kubernetes.io/part-of"):
+        app.kubernetes.io/part-of: #@ data.values.workload.metadata.labels["app.kubernetes.io/part-of"]
+        #@ end
+        #@ end
+        carto.run/workload-name: #@ data.values.workload.metadata.name
+        app.kubernetes.io/component: run
+    spec:
+      template:
+        metadata:
+          annotations:
+            autoscaling.knative.dev/minScale: '1'
+        spec:
+          serviceAccountName: #@ data.values.params.serviceAccount
+          containers:
+            - name: workload
+              image: #@ data.values.image
+              securityContext:
+                runAsUser: 1000
+    #@ end
+    ---
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: #@ data.values.workload.metadata.name
+    data:
+      manifest: manifest()

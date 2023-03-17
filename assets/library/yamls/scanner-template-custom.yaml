@@ -9,7 +9,7 @@ spec:
 
   params:
     - name: serviceAccount
-      default: <DEFAULT_SERVICE_ACCOUNT_NAME>
+      default: <DEFAULT_SERVICE_ACCOUNT>
     - name: config_secret
       default: <K8S_SECRET_CONTAINING_CUSTOM_SCANNER_CONFIG>
 

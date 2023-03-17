@@ -9,7 +9,7 @@ spec:
   imagePath: .status.outputs.image-ref
   params:
     - name: serviceAccount
-      default: <DEFAULT_SERVICE_ACCOUNT_NAME>
+      default: <DEFAULT_SERVICE_ACCOUNT>
     - name: registry
       default: {}
     - name: dockerfile

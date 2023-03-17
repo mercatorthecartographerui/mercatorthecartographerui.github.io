@@ -1,0 +1,212 @@
+---
+apiVersion: carto.run/v1alpha1
+kind: ClusterTemplate
+metadata:
+  name: <NAME>
+spec:
+  params:
+    - name: serviceAccount
+      default: <DEFAULT_SERVICE_ACCOUNT>
+    - name: gitops_ssh_secret
+      default: <DEFAULT_GITOPS_SSH_SECRET>
+    - name: gitops_server_address
+      default: <DEFAULT_GITOPS_SERVER_ADDRESS>
+    - name: gitops_repository_owner
+      default: <DEFAULT_GITOPS_REPOSITORY_OWNER>
+    - name: gitops_repository_name
+      default: <DEFAULT_GITOPS_REPOSITORY_NAME>
+    - name: gitops_branch
+      default: <DEFAULT_GITOPS_REPOSITORY_BRANCH>
+  ytt: |
+    #@ load("@ytt:data", "data")
+    #@ load("@ytt:json", "json")
+    #@ load("@ytt:base64", "base64")
+
+    #@ def getParam(key):
+    #@   if not key in data.values.params:
+    #@     return None
+    #@   end
+    #@   return data.values.params[key]
+    #@ end
+
+    #@ def strip_trailing_slash(some_string):
+    #@   if some_string[-1] == "/":
+    #@     return some_string[:-1]
+    #@   end
+    #@   return some_string
+    #@ end
+
+    #@ def getGitRepository():
+    #@   if not getParam("gitops_repository") == None:
+    #@     return getParam("gitops_repository")
+    #@   end
+    #@   strip_trailing_slash(data.values.params.gitops_server_address)
+    #@   return "/".join([
+    #@     strip_trailing_slash(data.values.params.gitops_server_address),
+    #@     strip_trailing_slash(data.values.params.gitops_repository_owner),
+    #@     data.values.params.gitops_repository_name,
+    #@   ]) + ".git" 
+    #@ end
+
+    apiVersion: carto.run/v1alpha1
+    kind: Runnable
+    metadata:
+      name: #@ data.values.workload.metadata.name + "-git-writer-runnable"
+    spec:
+      #@ if/end hasattr(data.values.workload.spec, "serviceAccountName"):
+      serviceAccountName: #@ data.values.workload.spec.serviceAccountName
+
+      runTemplateRef:
+        name: git-writer-run
+      inputs:
+        serviceAccount: #@ data.values.params.serviceAccount
+        git_ssh_secret: #@ getParam("git_ssh_secret")
+
+        taskRef:
+          kind: ClusterTask
+          name: git-writer-task
+        
+        params:
+          - name: git_repository
+            value: #@ getGitRepository()
+          - name: git_branch
+            default: #@ getParam("gitops_branch")
+          - name: git_user_name
+            default: #@ getParam("gitops_user_name")
+          - name: git_user_email
+            default: #@ getParam("gitops_user_email")
+          - name: git_commit_message
+            default: #@ getParam("gitops_commit_message")
+          - name: git_sub_path
+            value: #@ "config/" + data.values.workload.metadata.namespace + "/" + data.values.workload.metadata.name
+          - name: git_files
+            value: #@ base64.encode(json.encode(data.values.config))
+---
+apiVersion: carto.run/v1alpha1
+kind: ClusterRunTemplate
+metadata:
+  name: git-writer-run
+spec:
+  template:
+    apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: $(runnable.metadata.name)$-
+      labels: $(runnable.metadata.labels)$
+    spec:
+      workspaces:
+        - name: ssh-directory
+          secret:
+            secretName: $(runnable.spec.inputs.git_ssh_secret)$
+      serviceAccountName: $(runnable.spec.inputs.serviceAccountName)$
+      taskRef: $(runnable.spec.inputs.taskRef)$
+      params: $(runnable.spec.inputs.params)$
+---
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: ClusterTask
+metadata:
+  name: git-writer-task
+spec:
+  description: |-
+    A task that writes a given set of files (provided as a json base64-encoded)
+    to git repository under a specific directory (`./config`).
+  workspaces:
+    - name: ssh-directory
+      optional: true
+      description: |
+        A .ssh directory with private key, known_hosts, config, etc. Copied to
+        the user's home before git commands are executed. Used to authenticate
+        with the git remote when performing the clone. Binding a Secret to this
+        Workspace is strongly recommended over other volume types.
+    - name: basic-auth
+      optional: true
+      description: |
+        A Workspace containing a .gitconfig and .git-credentials file. These
+        will be copied to the user's home before any git commands are run. Any
+        other files in this Workspace are ignored. It is strongly recommended
+        to use ssh-directory over basic-auth whenever possible and to bind a
+        Secret to this Workspace over other volume types.
+  params:
+    - name: USER_HOME
+      description: |
+        Absolute path to the user's home directory. Set this explicitly if you are running the image as a non-root user or have overridden
+        the gitInitImage param with an image containing custom user configuration.
+      type: string
+      default: "/root"
+    - name: git_repository
+      description: The repository path
+      type: string
+    - name: git_branch
+      description: The git branch to read and write
+      type: string
+      default: "main"
+    - name: git_user_email
+      description: User email address
+      type: string
+      default: "example@example.com"
+    - name: git_user_name
+      description: User name
+      type: string
+      default: "Example"
+    - name: git_commit_message
+      description: Message for the git commit
+      type: string
+      default: "New Commit"
+    - name: git_sub_path
+      description: path under which the manifest will exist
+      type: string
+      default: "config"
+    - name: git_files
+      type: string
+      description: >
+        Base64-encoded json map of files to write to registry, for example -
+        eyAiUkVBRE1FLm1kIjogIiMgUmVhZG1lIiB9
+  steps:
+    - name: git-clone-and-push
+      image: bitnami/git:2.37.1-debian-11-r4
+      env:
+        - name: PARAM_USER_HOME
+          value: $(params.USER_HOME)
+        - name: WORKSPACE_SSH_DIRECTORY_BOUND
+          value: $(workspaces.ssh-directory.bound)
+        - name: WORKSPACE_SSH_DIRECTORY_PATH
+          value: $(workspaces.ssh-directory.path)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND
+          value: $(workspaces.basic-auth.bound)
+        - name: WORKSPACE_BASIC_AUTH_DIRECTORY_PATH
+          value: $(workspaces.basic-auth.path)
+      securityContext:
+        runAsUser: 0
+      workingDir: /root
+      script: |
+        #!/usr/bin/env bash
+        set -o errexit
+        set -o xtrace
+
+        if [ "${WORKSPACE_BASIC_AUTH_DIRECTORY_BOUND}" = "true" ] ; then
+          cp "${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.git-credentials" "${PARAM_USER_HOME}/.git-credentials"
+          cp "${WORKSPACE_BASIC_AUTH_DIRECTORY_PATH}/.gitconfig" "${PARAM_USER_HOME}/.gitconfig"
+          chmod 400 "${PARAM_USER_HOME}/.git-credentials"
+          chmod 400 "${PARAM_USER_HOME}/.gitconfig"
+        fi
+        if [ "${WORKSPACE_SSH_DIRECTORY_BOUND}" = "true" ] ; then
+          cp -R "${WORKSPACE_SSH_DIRECTORY_PATH}" "${PARAM_USER_HOME}"/.ssh
+          chmod 700 "${PARAM_USER_HOME}"/.ssh
+          chmod -R 400 "${PARAM_USER_HOME}"/.ssh/*
+        fi
+
+        git clone $(params.git_repository) ./repo
+        cd repo
+        git checkout -b $(params.git_branch) || git checkout $(params.git_branch)
+        git pull --rebase origin $(params.git_branch) || true
+        git config user.email $(params.git_user_email)
+        git config user.name $(params.git_user_name)
+        mkdir -p $(params.git_sub_path) && rm -rf $(params.git_sub_path)/*
+        cd $(params.git_sub_path)
+        curl -o /usr/local/bin/jq -L https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && chmod +x /usr/local/bin/jq
+        echo '$(params.git_files)' | base64 --decode > files.json
+        eval "$(cat files.json | jq -r 'to_entries | .[] | @sh "mkdir -p $(dirname \(.key)) && echo \(.value) > \(.key) && git add \(.key)"')"
+        git commit -m "$(params.git_commit_message)"
+        git push origin $(params.git_branch)

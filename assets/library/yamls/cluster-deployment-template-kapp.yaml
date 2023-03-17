@@ -12,7 +12,7 @@ spec:
       value: "False"
   params:
     - name: serviceAccount
-      default: <DEFAULT_SERVICE_ACCOUNT_NAME>
+      default: <DEFAULT_SERVICE_ACCOUNT>
   ytt: |
     #@ load("@ytt:data", "data")
     #@ load("@ytt:assert", "assert")

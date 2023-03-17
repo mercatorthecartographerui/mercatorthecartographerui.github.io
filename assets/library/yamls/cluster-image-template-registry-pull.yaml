@@ -1,0 +1,33 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterImageTemplate
+metadata:
+  name: <NAME>
+spec:
+  healthRule:
+    singleConditionType: Ready
+  imagePath: .status.artifact.revision
+  params:
+    - name: serviceAccount
+      default: <DEFAULT_SERVICE_ACCOUNT>
+  ytt: |
+    #@ load("@ytt:data", "data")
+
+    #@ def addLabels(fixed_values):
+    #@   labels = {}
+    #@   if hasattr(data.values.workload.metadata, "labels"):
+    #@     labels.update(data.values.workload.metadata.labels)
+    #@   end
+    #@   labels.update(fixed_values)
+    #@   return labels
+    #@ end
+
+    ---
+    apiVersion: source.apps.tanzu.vmware.com/v1alpha1
+    kind: ImageRepository
+    metadata:
+      name: #@ data.values.workload.metadata.name
+      labels: #@ addLabels({ "app.kubernetes.io/component": "image" })
+    spec:
+      image: #@ data.values.workload.spec.image
+      interval: <POLL_INTERVAL_MIN>m0s
+      serviceAccountName: #@ data.values.params.serviceAccount
