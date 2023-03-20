@@ -113,19 +113,9 @@
     "icon": "scanner",
     "options": [
       {
-        "name": "Source Scanner",
-        "value": "SourceScanner",
-        "file": "/assets/library/yamls/scanner-template-source.yaml"
-      },
-      {
-        "name": "Image Scanner",
-        "value": "ImageScanner",
-        "file": "/assets/library/yamls/scanner-template-image.yaml"
-      },
-      {
-        "name": "Custom Scanner",
-        "value": "CustomScanner",
-        "file": "/assets/library/yamls/scanner-template-custom.yaml",
+        "name": "Custom Image Scanner",
+        "value": "CustomImageScanner",
+        "file": "/assets/library/yamls/scanner-template-image-custom.yaml",
         "suggestions": [
           {
             "icon": "password",
@@ -138,9 +128,26 @@
             "createYamlParam": "type=TektonObjects&option=TrivyScan"
           }
         ]
+      },
+      {
+        "name": "Custom Source Scanner",
+        "value": "CustomSourceScanner",
+        "file": "/assets/library/yamls/scanner-template-source-custom.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "Have you created K8s opaque secret to pass config for scanner (trivy, grype etc)?",
+            "createYamlParam": "type=K8s&option=TrivyConfig"
+          },
+          {
+            "icon": "settings",
+            "description": "Have you Created Tekton task to be executed by the RunTemplate (trivy, grype etc)?",
+            "createYamlParam": "type=TektonObjects&option=GrypeScan"
+          }
+        ]
       }
     ],
-    "file": "/assets/library/yamls/scanner-template-image.yaml"
+    "file": "/assets/library/yamls/scanner-template-image-custom.yaml"
   },
   {
     "name": "CodeTesting",
@@ -164,7 +171,7 @@
     "options": [
       {
         "name": "Kantive Manifest",
-        "value": "KantiveManifest",
+        "value": "KnativeManifest",
         "file": "/assets/library/yamls/cluster-config-template-knative.yaml",
         "suggestions": [
           {
@@ -240,6 +247,18 @@
         ]
       },
       {
+        "name": "Grype Scan",
+        "value": "GrypeScan",
+        "file": "/assets/library/yamls/tekton-cluster-task-grype-scanner.yaml",
+        "suggestions": [
+          {
+            "icon": "password",
+            "description": "consider creating grype config secret",
+            "createYamlParam": "type=K8s&option=GrypeConfig"
+          }
+        ]
+      },
+      {
         "name": "Sonarcube Scan",
         "value": "SonarcureScan",
         "file": "/assets/library/yamls/cluster-task-sonarcube-scanner.yaml",
@@ -264,6 +283,11 @@
         "name": "Trivy Config",
         "value": "TrivyConfig",
         "file": "/assets/library/yamls/k8s-secret-trivy-config.yaml"
+      },
+      {
+        "name": "Grype Config",
+        "value": "GrypeConfig",
+        "file": "/assets/library/yamls/k8s-secret-grype-config.yaml"
       },
       {
         "name": "Git SSH Secret",

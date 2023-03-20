@@ -165,7 +165,6 @@
     "type": "text",
     "field": "CLUSTER_TASK_NAME",
     "label": "Name of ClusterTask",
-    "defaultValue": "kaniko-build",
     "helperText": "example ClusterTask name: kaniko-build, trivvy-img-scanner etc.<br/>This ClusterTask name is referenced in ClusterRunTemplate which is referenced as Runnable in ClusterImageTemplate (eg: kaniko-runtemplate, custom-scanner etc).<br/>This ClusterTask and ClusterRunTemplate must exists for the referrer ClusterImageTemplate to work.",
     "validationType": "string",
     "validations": [
@@ -235,37 +234,7 @@
       }
     ]
   },
-  {
-    "usedin": "custom scanner",
-    "type": "text",
-    "field": "CUSTOM_SCANNER_RUN_TEMPLATE_NAME",
-    "label": "Run Template Name",
-    "defaultValue": "scanner-run",
-    "helperText": "ClusterRunTemplate used by Runnable component for scanning purpose. This ClusterRunTemplate (referenced in kind:Runnable) runs the Tekton ClusterTask for scanning code or image. <em>Ensure that you choose a unique name that does not exist in this K8s cluster.</em>",
-    "validationType": "string",
-    "validations": [
-      {
-        "type": "required",
-        "params": ["ClusterRunTemplate name is required"]
-      }
-    ]
-  },
 
-  {
-    "usedin": "ClusterRunTemplate - eg: kaniko-runtemplate for Runnable - this is generic enough",
-    "type": "text",
-    "field": "CLUSTER_TASK_NAME",
-    "label": "Name of ClusterTask",
-    "defaultValue": "kaniko-build",
-    "helperText": "example ClusterTask name: kaniko-build, trivvy-img-scanner etc.<br/>This ClusterTask name is referenced in ClusterRunTemplate which is referenced as Runnable in ClusterImageTemplate (eg: kaniko-runtemplate, custom-scanner etc).<br/>This ClusterTask and ClusterRunTemplate must exists for the referrer ClusterImageTemplate to work.",
-    "validationType": "string",
-    "validations": [
-      {
-        "type": "required",
-        "params": ["ClusterTask name is required"]
-      }
-    ]
-  },
   {
     "usedin": "tekton-cluster-task-trivy-scanner",
     "type": "text",
@@ -390,6 +359,7 @@
     "type": "text",
     "field": "GIT_SERVER_HOST",
     "label": "Git server host",
+    "defaultValue": "github.com",
     "helperText": "The hostname of the git server. eg: github.com, bitbucket.org, ssh.dev.azure.com etc",
     "validationType": "string",
     "validations": [
